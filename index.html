@@ -514,6 +514,30 @@
 <span class="cmd">exit</span></pre>
         </div>
       </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — Sistema y configuración</h3>
+        <p>Comandos para revisar el estado general del dispositivo.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — Sistema</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Versión IOS, uptime, memoria RAM y flash</span>
+<span class="cmd">show version</span>
+<span class="comment"># Configuración activa (RAM)</span>
+<span class="cmd">show running-config</span>
+<span class="comment"># Configuración guardada (NVRAM)</span>
+<span class="cmd">show startup-config</span>
+<span class="comment"># Hora y fecha del dispositivo</span>
+<span class="cmd">show clock</span>
+<span class="comment"># Sesiones de usuario activas</span>
+<span class="cmd">show users</span>
+<span class="comment"># Estado de líneas (consola, VTY)</span>
+<span class="cmd">show line</span></pre>
+        </div>
+      </div>
     </div>
 
     <!-- ===== 2. INTERFACES ===== -->
@@ -557,6 +581,26 @@
 <span class="cmd">do show int</span> <span class="val">gig0/0/0</span></pre>
         </div>
       </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — Interfaces</h3>
+        <p>Comandos para revisar el estado, IPs y estadísticas de interfaces.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — Interfaces</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Resumen: nombre, IP, estado (up/down)</span>
+<span class="cmd">show ip interface brief</span>
+<span class="comment"># Detalle completo de una interfaz (errores, velocidad, duplex)</span>
+<span class="cmd">show interfaces</span> <span class="val">gig0/0/0</span>
+<span class="comment"># Estado de todas las interfaces en switches (access/trunk)</span>
+<span class="cmd">show interfaces status</span>
+<span class="comment"># Descripción de todas las interfaces</span>
+<span class="cmd">show interfaces description</span></pre>
+        </div>
+      </div>
     </div>
 
     <!-- ===== 3. DEFAULT GATEWAY ===== -->
@@ -579,6 +623,23 @@
           <pre><span class="cmd">en</span>
 <span class="cmd">conf t</span>
 <span class="cmd">ip default-gateway</span> <span class="ip">10.40.0.100</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — Gateway y conectividad</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — Gateway</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Ver la tabla ARP (IP → MAC)</span>
+<span class="cmd">show arp</span>
+<span class="comment"># Probar conectividad</span>
+<span class="cmd">ping</span> <span class="ip">10.40.0.100</span>
+<span class="comment"># Trazar ruta hasta un destino</span>
+<span class="cmd">traceroute</span> <span class="ip">10.40.0.100</span></pre>
         </div>
       </div>
     </div>
@@ -637,6 +698,28 @@
               <tr><td><span class="vlan-badge v50">50</span></td><td>NATIVA</td><td class="ip-cell">10.50.0.0/16</td><td>VLAN nativa en trunks</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — VLANs</h3>
+        <p>Comandos para confirmar que las VLANs están creadas y los puertos asignados correctamente.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — VLANs</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Resumen: ID, nombre y puertos asignados</span>
+<span class="cmd">show vlan brief</span>
+<span class="comment"># Detalle completo de todas las VLANs</span>
+<span class="cmd">show vlan</span>
+<span class="comment"># Detalle de una VLAN específica</span>
+<span class="cmd">show vlan id</span> <span class="val">10</span>
+<span class="comment"># Tabla MAC: qué MAC está en qué puerto/VLAN</span>
+<span class="cmd">show mac address-table</span>
+<span class="comment"># Tabla MAC filtrada por VLAN</span>
+<span class="cmd">show mac address-table vlan</span> <span class="val">10</span></pre>
         </div>
       </div>
     </div>
@@ -728,6 +811,26 @@
           </table>
         </div>
       </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — Trunk y Access</h3>
+        <p>Confirmar qué puertos son trunk, qué VLANs permiten y el estado de los puertos access.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — Trunk / Access</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Ver puertos trunk activos, VLANs permitidas y nativa</span>
+<span class="cmd">show interfaces trunk</span>
+<span class="comment"># Ver modo de un puerto específico (access/trunk/dynamic)</span>
+<span class="cmd">show interfaces</span> <span class="val">gig1/0/1</span> <span class="cmd">switchport</span>
+<span class="comment"># Ver todos los puertos y su modo switchport</span>
+<span class="cmd">show interfaces switchport</span>
+<span class="comment"># Estado resumido de todos los puertos del switch</span>
+<span class="cmd">show interfaces status</span></pre>
+        </div>
+      </div>
     </div>
     <!-- ===== 6. SVI ===== -->
     <div class="section" id="svi">
@@ -787,6 +890,24 @@
           <div class="info-item"><div class="label">Switch (gestión)</div><div class="value">10.40.0.6</div></div>
         </div>
       </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — SVI e IPs</h3>
+        <p>Confirmar que las interfaces VLAN tienen IP asignada y están activas.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — SVI</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Ver IPs de todas las interfaces VLAN (SVIs)</span>
+<span class="cmd">show ip interface brief</span>
+<span class="comment"># Detalle de una SVI específica</span>
+<span class="cmd">show interfaces vlan</span> <span class="val">40</span>
+<span class="comment"># Ver tabla ARP del switch</span>
+<span class="cmd">show arp</span></pre>
+        </div>
+      </div>
     </div>
 
     <!-- ===== 7. ROUTING ===== -->
@@ -812,6 +933,26 @@
 <span class="kw">!</span>
 <span class="comment"># Verificar rutas</span>
 <span class="cmd">do show ip route</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — Routing</h3>
+        <p>Comandos para revisar la tabla de rutas y los protocolos activos.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — Routing</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Tabla de rutas completa (C=conectada, S=estática, R=RIP...)</span>
+<span class="cmd">show ip route</span>
+<span class="comment"># Solo rutas conectadas directamente</span>
+<span class="cmd">show ip route connected</span>
+<span class="comment"># Protocolos de routing activos y sus redes</span>
+<span class="cmd">show ip protocols</span>
+<span class="comment"># Ver si ip routing está habilitado</span>
+<span class="cmd">show running-config</span> <span class="kw">|</span> <span class="cmd">include ip routing</span></pre>
         </div>
       </div>
     </div>
@@ -890,6 +1031,32 @@
 <span class="cmd">reload</span>
 <span class="comment"># Luego en la interfaz:</span>
 <span class="cmd">ipv6 address autoconfig</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔍 Verificación — IPv6</h3>
+        <p>Comandos para revisar direcciones IPv6, vecinos NDP y tabla de rutas IPv6.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — IPv6</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Resumen de interfaces IPv6 (link-local + global)</span>
+<span class="cmd">show ipv6 interface brief</span>
+<span class="comment"># Detalle completo de una interfaz IPv6</span>
+<span class="cmd">show ipv6 interface</span> <span class="val">gig0/0/0</span>
+<span class="comment"># Tabla de vecinos NDP (equivalente a show arp en IPv4)</span>
+<span class="cmd">show ipv6 neighbors</span>
+<span class="comment"># Tabla de rutas IPv6</span>
+<span class="cmd">show ipv6 route</span>
+<span class="comment"># Solo rutas conectadas IPv6</span>
+<span class="cmd">show ipv6 route connected</span>
+<span class="comment"># Ping IPv6</span>
+<span class="cmd">ping ipv6</span> <span class="ip">3000::1</span>
+<span class="comment"># Ping a dirección link-local (requiere especificar interfaz)</span>
+<span class="cmd">ping ipv6</span> <span class="ip">fe80::1</span> <span class="cmd">source</span> <span class="val">gig0/0/0</span></pre>
         </div>
       </div>
     </div>
