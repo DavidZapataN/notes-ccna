@@ -131,8 +131,7 @@
       transition: all 0.2s;
     }
     .theme-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-    /* CONTENT */
-    .content { padding: 40px; max-width: 900px; }
+    /* CONTENT — see responsive section below */
     .section {
       margin-bottom: 60px;
       opacity: 0;
@@ -277,7 +276,6 @@
     .hero {
       background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
       border-bottom: 1px solid var(--border);
-      padding: 48px 40px 40px;
       margin-bottom: 0;
     }
     .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
@@ -298,20 +296,92 @@
       50% { border-color: var(--accent); }
     }
     .highlight-card { animation: pulse-border 2s ease-in-out 1; }
+    /* SCROLL PROGRESS BAR */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 4px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 9999;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+    /* CENTER CONTENT */
+    .content {
+      padding: 40px;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .hero {
+      padding: 48px 40px 40px;
+    }
     /* SCROLLBAR */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
+
+    /* ===== RESPONSIVE ===== */
+    /* Hamburger button */
+    .menu-btn {
+      display: none;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .menu-btn:hover { background: var(--accent); color: #fff; }
+    /* Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+      backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 200;
+      }
+      .sidebar.open { transform: translateX(0); }
       .main { margin-left: 0; }
-      .content { padding: 20px; }
+      .menu-btn { display: flex; }
+      .content { padding: 24px 16px; }
+      .hero { padding: 32px 16px 28px; }
+      .hero h1 { font-size: 1.6rem; }
       .ndp-grid { grid-template-columns: 1fr; }
+      .info-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+      .topbar { padding: 12px 16px; }
+      .section-header h2 { font-size: 1.2rem; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.3rem; }
+      .hero-tags { gap: 6px; }
+      pre { font-size: 0.78rem; }
+      .card { padding: 16px; }
+      .info-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
+<!-- SCROLL PROGRESS BAR -->
+<div id="scroll-progress"></div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -338,7 +408,10 @@
 <div class="main">
   <!-- TOPBAR -->
   <div class="topbar">
-    <span class="topbar-title">Notas de Redes — CCNA 1</span>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="menu-btn" onclick="toggleSidebar()" aria-label="Menú">☰</button>
+      <span class="topbar-title">Notas de Redes — CCNA 1</span>
+    </div>
     <button class="theme-toggle" onclick="toggleTheme()">
       <span id="theme-icon">☀️</span>
       <span id="theme-label">Modo Claro</span>
@@ -844,6 +917,31 @@
       document.getElementById('theme-label').textContent = 'Modo Oscuro';
     }
   })();
+
+  // ===== SCROLL PROGRESS BAR =====
+  const progressBar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  });
+
+  // ===== SIDEBAR TOGGLE (mobile) =====
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+  }
+  function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+  }
+  // Close sidebar on nav link click (mobile)
+  document.querySelectorAll('.sidebar nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) closeSidebar();
+    });
+  });
 
   // ===== COPY CODE =====
   function copyCode(btn) {
