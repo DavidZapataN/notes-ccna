@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EtherChannel — CCNA 2</title>
+  <style>
+    :root[data-theme="dark"] {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text2: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #f78166;
+      --accent4: #d2a8ff;
+      --code-bg: #0d1117;
+      --tag-bg: #1f3a5f;
+      --tag-text: #58a6ff;
+      --sidebar-bg: #161b22;
+      --card-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    :root[data-theme="light"] {
+      --bg: #f6f8fa;
+      --bg2: #ffffff;
+      --bg3: #eaeef2;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --text2: #656d76;
+      --accent: #0969da;
+      --accent2: #1a7f37;
+      --accent3: #cf222e;
+      --accent4: #8250df;
+      --code-bg: #f6f8fa;
+      --tag-bg: #ddf4ff;
+      --tag-text: #0969da;
+      --sidebar-bg: #ffffff;
+      --card-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0;
+      overflow-y: auto;
+      padding: 24px 0;
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .sidebar-logo {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .sidebar-logo h1 { font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; }
+    .sidebar-logo p { font-size: 0.75rem; color: var(--text2); margin-top: 4px; }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 0.875rem;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .sidebar nav a:hover, .sidebar nav a.active {
+      color: var(--accent);
+      background: var(--bg3);
+      border-left-color: var(--accent);
+    }
+    .sidebar nav .section-label {
+      padding: 16px 20px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text2);
+    }
+    .sidebar nav .back-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+    .sidebar nav .back-link:hover { color: var(--accent); }
+    /* MAIN */
+    .main { margin-left: 260px; flex: 1; padding: 0; }
+    /* TOPBAR */
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      transition: background 0.3s;
+    }
+    .topbar-title { font-size: 0.95rem; color: var(--text2); }
+    .theme-toggle {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .theme-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    /* CONTENT */
+    .section {
+      margin-bottom: 60px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .section.visible { opacity: 1; transform: translateY(0); }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 42px; height: 42px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .section-header h2 { font-size: 1.4rem; font-weight: 700; }
+    .section-header .badge {
+      margin-left: auto;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--card-shadow);
+      transition: background 0.3s, border-color 0.3s, transform 0.2s;
+    }
+    .card:hover { transform: translateY(-2px); }
+    .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: var(--accent); }
+    .card p { font-size: 0.9rem; color: var(--text2); line-height: 1.6; margin-bottom: 10px; }
+    .card p:last-child { margin-bottom: 0; }
+    /* HIGHLIGHT CARD */
+    .card.key-data { border-left: 3px solid var(--accent3); }
+    .card.key-data h3 { color: var(--accent3); }
+    /* CODE BLOCKS */
+    .code-block {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text2);
+    }
+    .code-header .dots { display: flex; gap: 6px; }
+    .code-header .dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; }
+    .dot-yellow { background: #febc2e; }
+    .dot-green { background: #28c840; }
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 3px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .copy-btn.copied { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    pre .comment { color: var(--text2); font-style: italic; }
+    pre .cmd { color: #79c0ff; }
+    pre .kw { color: #ff7b72; }
+    pre .val { color: #a5d6ff; }
+    pre .ip { color: var(--accent2); }
+    pre .proto { color: #d2a8ff; }
+    /* TABLE */
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead { background: var(--bg3); }
+    th { padding: 12px 16px; text-align: left; font-weight: 600; color: var(--text2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { padding: 11px 16px; border-top: 1px solid var(--border); color: var(--text); }
+    tr:hover td { background: var(--bg3); }
+    .badge-ok { background: #1a3a2a; color: #3fb950; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+    .badge-no { background: #3a1a1a; color: #f78166; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+    .badge-pagp { background: #1f3a5f; color: #58a6ff; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+    .badge-lacp { background: #2a1a3a; color: #d2a8ff; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+    .badge-on { background: #3a2a00; color: #e3b341; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+    /* INFO GRID */
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 14px; }
+    .info-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .info-item .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); margin-bottom: 6px; }
+    .info-item .value { font-size: 0.95rem; font-weight: 600; color: var(--accent); font-family: monospace; }
+    .info-item .value.green { color: var(--accent2); }
+    .info-item .value.purple { color: var(--accent4); }
+    .info-item .value.orange { color: #e3b341; }
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      padding: 48px 40px 40px;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { color: var(--text2); font-size: 1rem; max-width: 520px; }
+    .hero-tags { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .hero-tag { background: var(--tag-bg); color: var(--tag-text); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    /* DIAGRAM */
+    .diagram {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 14px 0;
+      font-family: 'Cascadia Code', monospace;
+      font-size: 0.8rem;
+      color: var(--text2);
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+    .diagram .d-accent { color: var(--accent); }
+    .diagram .d-green { color: var(--accent2); }
+    .diagram .d-purple { color: var(--accent4); }
+    .diagram .d-orange { color: #e3b341; }
+    /* SCROLL PROGRESS */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 4px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent4), var(--accent));
+      z-index: 9999;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+    /* CENTER CONTENT */
+    .content { padding: 40px; max-width: 860px; margin: 0 auto; width: 100%; }
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    /* Hamburger */
+    .menu-btn {
+      display: none;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .menu-btn:hover { background: var(--accent); color: #fff; }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+      backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; z-index: 200; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-btn { display: flex; }
+      .content { padding: 24px 16px; }
+      .hero { padding: 32px 16px 28px; }
+      .hero h1 { font-size: 1.6rem; }
+      .info-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+      .topbar { padding: 12px 16px; }
+      .section-header h2 { font-size: 1.2rem; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.3rem; }
+      pre { font-size: 0.78rem; }
+      .card { padding: 16px; }
+      .info-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="scroll-progress"></div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>📡 CCNA Notes</h1>
+    <p>Parcial 2 — EtherChannel</p>
+  </div>
+  <nav>
+    <a class="back-link" href="index.html">← Volver a CCNA 1</a>
+    <div class="section-label">Conceptos</div>
+    <a href="#concepto">⚡ ¿Qué es EtherChannel?</a>
+    <a href="#datos">📌 Datos de Parcial</a>
+    <div class="section-label">Protocolos</div>
+    <a href="#pagp">🔵 PAgP (Cisco)</a>
+    <a href="#lacp">🟣 LACP (IEEE)</a>
+    <a href="#static">🟡 Static (On)</a>
+    <div class="section-label">Configuración</div>
+    <a href="#config">⚙️ Configuración</a>
+    <a href="#verificacion">🔍 Verificación</a>
+    <a href="#troubleshoot">🛠️ Troubleshooting</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="menu-btn" onclick="toggleSidebar()" aria-label="Menú">☰</button>
+      <span class="topbar-title">EtherChannel — Parcial 2</span>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span id="theme-icon">☀️</span>
+      <span id="theme-label">Modo Claro</span>
+    </button>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero section visible">
+    <h1>⚡ <span>EtherChannel</span></h1>
+    <p>Agrupa múltiples enlaces físicos en un único enlace lógico para aumentar ancho de banda y redundancia. Parcial 2 de Redes.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">EtherChannel</span>
+      <span class="hero-tag">PAgP</span>
+      <span class="hero-tag">LACP 802.3ad</span>
+      <span class="hero-tag">Port-Channel</span>
+      <span class="hero-tag">Load Balancing</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== 1. QUÉ ES ETHERCHANNEL ===== -->
+    <div class="section" id="concepto">
+      <div class="section-header">
+        <div class="section-icon">⚡</div>
+        <h2>¿Qué es EtherChannel?</h2>
+        <span class="badge">Concepto</span>
+      </div>
+
+      <div class="card">
+        <h3>Definición y propósito</h3>
+        <p>EtherChannel (también llamado <strong>Link Aggregation</strong> o <strong>Port Aggregation</strong>) agrupa entre <strong>2 y 8 puertos físicos</strong> en una sola interfaz lógica llamada <strong>Port-Channel</strong>.</p>
+        <p>El switch vecino lo ve como un único enlace. STP también lo trata como un solo puerto, evitando que bloquee los enlaces redundantes.</p>
+        <div class="diagram">
+<span class="d-accent">SW-A</span>                           <span class="d-accent">SW-B</span>
+  Gi0/1 ══════════════════ Gi0/1
+  Gi0/2 ══════════════════ Gi0/2   → Lógicamente:
+  Gi0/3 ══════════════════ Gi0/3
+  Gi0/4 ══════════════════ Gi0/4
+     <span class="d-green">└── Port-Channel 1 (4 Gbps) ──┘</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Beneficios clave</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">Ancho de banda</div>
+            <div class="value">Suma todos los enlaces</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Redundancia</div>
+            <div class="value green">Si cae un link, sigue</div>
+          </div>
+          <div class="info-item">
+            <div class="label">STP</div>
+            <div class="value">Lo ve como 1 puerto</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Config. única</div>
+            <div class="value">Se configura en Port-Channel</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Requisitos para formar EtherChannel</h3>
+        <p>Todos los puertos físicos agrupados deben tener <strong>exactamente los mismos parámetros</strong>:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parámetro</th><th>Debe ser igual en todos los puertos</th></tr></thead>
+            <tbody>
+              <tr><td>Velocidad</td><td>Ej: todos en 1000 Mbps</td></tr>
+              <tr><td>Dúplex</td><td>Todos full-duplex</td></tr>
+              <tr><td>Modo switchport</td><td>Todos access o todos trunk</td></tr>
+              <tr><td>VLAN permitidas (si trunk)</td><td>Mismas VLANs permitidas</td></tr>
+              <tr><td>VLAN nativa (si trunk)</td><td>Misma VLAN nativa</td></tr>
+              <tr><td>VLAN access (si access)</td><td>Misma VLAN de acceso</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 2. DATOS DE PARCIAL ===== -->
+    <div class="section" id="datos">
+      <div class="section-header">
+        <div class="section-icon">📌</div>
+        <h2>Datos Puntuales de Parcial</h2>
+        <span class="badge">Examen</span>
+      </div>
+
+      <div class="card key-data">
+        <h3>🎯 Números y estándares clave</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">Máx. links activos</div>
+            <div class="value">8 puertos</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Máx. links LACP total</div>
+            <div class="value orange">16 (8 activos + 8 standby)</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Estándar LACP</div>
+            <div class="value purple">IEEE 802.3ad / 802.1ax</div>
+          </div>
+          <div class="info-item">
+            <div class="label">PAgP propietario de</div>
+            <div class="value">Cisco</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Interfaz lógica</div>
+            <div class="value">Port-Channel (Po)</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Rango Port-Channel</div>
+            <div class="value">1 – 6 (o 1–48 según plataforma)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card key-data">
+        <h3>🎯 Modos PAgP — Establecimiento del canal</h3>
+        <p>Todas las combinaciones posibles entre S1 y S2 (igual que la tabla DTP del parcial anterior).</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>S1</th>
+                <th>S2</th>
+                <th>¿Forma canal?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge-on">On</span></td>
+                <td><span class="badge-on">On</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-on">On</span></td>
+                <td><span class="badge-pagp">Desirable</span> / <span class="badge-pagp">Auto</span></td>
+                <td><span class="badge-no">✗ No</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-pagp">Desirable</span></td>
+                <td><span class="badge-pagp">Desirable</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-pagp">Desirable</span></td>
+                <td><span class="badge-pagp">Auto</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-pagp">Auto</span></td>
+                <td><span class="badge-pagp">Desirable</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-pagp">Auto</span></td>
+                <td><span class="badge-pagp">Auto</span></td>
+                <td><span class="badge-no">✗ No</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px;font-size:0.8rem;color:var(--accent3);"><strong>Regla de oro:</strong> Al menos uno de los lados debe ser Desirable para que haya negociación. On solo funciona con On.</p>
+      </div>
+
+      <div class="card key-data">
+        <h3>🎯 Modos LACP — Establecimiento del canal</h3>
+        <p>Todas las combinaciones posibles entre S1 y S2.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>S1</th>
+                <th>S2</th>
+                <th>¿Forma canal?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge-on">On</span></td>
+                <td><span class="badge-on">On</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-on">On</span></td>
+                <td><span class="badge-lacp">Active</span> / <span class="badge-lacp">Passive</span></td>
+                <td><span class="badge-no">✗ No</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-lacp">Active</span></td>
+                <td><span class="badge-lacp">Active</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-lacp">Active</span></td>
+                <td><span class="badge-lacp">Passive</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-lacp">Passive</span></td>
+                <td><span class="badge-lacp">Active</span></td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-lacp">Passive</span></td>
+                <td><span class="badge-lacp">Passive</span></td>
+                <td><span class="badge-no">✗ No</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px;font-size:0.8rem;color:var(--accent3);"><strong>Regla de oro:</strong> Al menos uno de los lados debe ser Active para que haya negociación. On solo funciona con On.</p>
+      </div>
+
+      <div class="card key-data">
+        <h3>🎯 Analogía PAgP vs LACP</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>PAgP (Cisco)</th><th>LACP (IEEE)</th><th>Comportamiento</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge-pagp">Desirable</span></td><td><span class="badge-lacp">Active</span></td><td>Inicia la negociación (agresivo)</td></tr>
+              <tr><td><span class="badge-pagp">Auto</span></td><td><span class="badge-lacp">Passive</span></td><td>Espera que el otro inicie (pasivo)</td></tr>
+              <tr><td><span class="badge-on">On</span></td><td><span class="badge-on">On</span></td><td>Fuerza canal, sin negociación</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card key-data">
+        <h3>🎯 Métodos de Load Balancing</h3>
+        <p>EtherChannel distribuye el tráfico entre los links. El método determina qué campos del frame/paquete se usan para elegir el enlace.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Método</th><th>Basado en</th></tr></thead>
+            <tbody>
+              <tr><td><code>src-mac</code></td><td>MAC origen</td></tr>
+              <tr><td><code>dst-mac</code></td><td>MAC destino</td></tr>
+              <tr><td><code>src-dst-mac</code></td><td>MAC origen + destino (más balanceado)</td></tr>
+              <tr><td><code>src-ip</code></td><td>IP origen</td></tr>
+              <tr><td><code>dst-ip</code></td><td>IP destino</td></tr>
+              <tr><td><code>src-dst-ip</code></td><td>IP origen + destino (más balanceado)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px;font-size:0.8rem;">El método por defecto varía según plataforma. <strong>src-dst-mac</strong> o <strong>src-dst-ip</strong> dan el mejor balance.</p>
+      </div>
+
+      <div class="card key-data">
+        <h3>🎯 Restricciones de implementación (6.1.4)</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">Máx. puertos por EtherChannel</div>
+            <div class="value">8 puertos</div>
+          </div>
+          <div class="info-item">
+            <div class="label">BW Fast EtherChannel</div>
+            <div class="value orange">800 Mbps full-duplex</div>
+          </div>
+          <div class="info-item">
+            <div class="label">BW Gigabit EtherChannel</div>
+            <div class="value green">8 Gbps full-duplex</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Máx. EtherChannels en Catalyst 2960</div>
+            <div class="value">6 EtherChannels</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Tipos de interfaz mezclados</div>
+            <div class="value" style="color:var(--accent3)">NO permitido</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Puertos deben ser</div>
+            <div class="value">Todos capa 2</div>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top:14px;">
+          <table>
+            <thead><tr><th>Restricción</th><th>Detalle</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>No mezclar tipos de interfaz</td>
+                <td>Fast Ethernet y Gigabit Ethernet <strong>no se pueden combinar</strong> en un mismo EtherChannel</td>
+              </tr>
+              <tr>
+                <td>Máximo 8 puertos activos</td>
+                <td>800 Mbps (FE) o 8 Gbps (GE) full-duplex</td>
+              </tr>
+              <tr>
+                <td>Catalyst 2960 soporta máx. 6 EtherChannels</td>
+                <td>Depende de plataforma e IOS</td>
+              </tr>
+              <tr>
+                <td>Configuración idéntica en ambos lados</td>
+                <td>Velocidad, dúplex, modo (trunk/access), VLAN nativa y VLANs permitidas deben coincidir</td>
+              </tr>
+              <tr>
+                <td>Solo puertos capa 2</td>
+                <td>Todos los puertos del grupo deben ser L2 (switchport)</td>
+              </tr>
+              <tr>
+                <td>Config en Port-Channel = config en físicos</td>
+                <td>Lo que se aplica a la interfaz lógica Po afecta a todos los puertos físicos del grupo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3. PAgP ===== -->
+    <div class="section" id="pagp">
+      <div class="section-header">
+        <div class="section-icon">🔵</div>
+        <h2>PAgP — Port Aggregation Protocol</h2>
+        <span class="badge">Cisco</span>
+      </div>
+
+      <div class="card">
+        <h3>Características PAgP</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">Propietario</div>
+            <div class="value">Cisco</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Modos</div>
+            <div class="value">Desirable / Auto / On</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Requiere mismo fabricante</div>
+            <div class="value orange">Sí (ambos Cisco)</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Paquetes PAgP cada</div>
+            <div class="value" style="color:var(--accent3)">30 segundos</div>
+          </div>
+          <div class="info-item">
+            <div class="label">STP lo ve como</div>
+            <div class="value">1 único puerto</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Modo por defecto</div>
+            <div class="value">Auto</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Modos PAgP — Cómo funciona cada uno</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Modo</th><th>Comportamiento</th><th>Intercambia paquetes PAgP</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="badge-pagp">Desirable</span></td>
+                <td>Negociación <strong>activa</strong>: inicia la negociación enviando paquetes PAgP al otro lado</td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-pagp">Auto</span></td>
+                <td>Negociación <strong>pasiva</strong>: responde paquetes PAgP recibidos, pero <strong>no inicia</strong></td>
+                <td><span class="badge-ok">✓ Sí (solo responde)</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-on">On</span></td>
+                <td>Fuerza el canal <strong>sin PAgP</strong>. No negocia. Solo funciona si el otro lado también es On</td>
+                <td><span class="badge-no">✗ No</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:12px;font-size:0.85rem;color:var(--accent3);"><strong>⚠ Auto + Auto = NO forma canal</strong> — ninguno inicia la negociación.</p>
+        <p style="font-size:0.85rem;color:var(--accent3);margin-top:6px;"><strong>⚠ On + Desirable/Auto = NO forma canal</strong> — On no negocia con PAgP.</p>
+        <p style="font-size:0.85rem;color:var(--text2);margin-top:6px;">Modificar un puerto físico del canal modifica automáticamente <strong>todos los demás puertos del mismo canal</strong>.</p>
+      </div>
+
+      <div class="card">
+        <h3>Configuración PAgP — Desirable / Auto</h3>
+        <p>Se configuran los puertos físicos y se asignan al Port-Channel con <code>channel-group</code>.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — PAgP</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># En SW-A (modo Desirable — inicia negociación)</span>
+<span class="cmd">en</span>
+<span class="cmd">conf t</span>
+<span class="cmd">int range</span> <span class="val">gig0/1 - 4</span>
+<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">desirable</span>
+<span class="cmd">exit</span>
+<span class="kw">!</span>
+<span class="comment"># En SW-B (modo Auto — espera)</span>
+<span class="cmd">int range</span> <span class="val">gig0/1 - 4</span>
+<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">auto</span>
+<span class="cmd">exit</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4. LACP ===== -->
+    <div class="section" id="lacp">
+      <div class="section-header">
+        <div class="section-icon">🟣</div>
+        <h2>LACP — Link Aggregation Control Protocol</h2>
+        <span class="badge">IEEE 802.1AX</span>
+      </div>
+
+      <div class="card">
+        <h3>Características LACP</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">Estándar original</div>
+            <div class="value purple">IEEE 802.3ad</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Estándar actual (moderno)</div>
+            <div class="value purple">IEEE 802.1AX</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Modos</div>
+            <div class="value">Active / Passive / On</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Interoperabilidad</div>
+            <div class="value green">Cualquier fabricante</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Links activos máx.</div>
+            <div class="value" style="color:var(--accent3)">8 activos</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Links standby máx.</div>
+            <div class="value orange">8 en reserva</div>
+          </div>
+        </div>
+        <p style="margin-top:12px;font-size:0.85rem;color:var(--text2);">Si falla un enlace activo, un enlace de reserva (standby) <strong>se activa automáticamente</strong>. Esto lo diferencia de PAgP, que no tiene standby.</p>
+      </div>
+
+      <div class="card">
+        <h3>Modos LACP — Cómo funciona cada uno</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Modo</th><th>Comportamiento</th><th>Intercambia paquetes LACP</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="badge-lacp">Active</span></td>
+                <td>Negociación <strong>activa</strong>: inicia la negociación enviando paquetes LACP al otro lado</td>
+                <td><span class="badge-ok">✓ Sí</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-lacp">Passive</span></td>
+                <td>Negociación <strong>pasiva</strong>: responde paquetes LACP recibidos, pero <strong>no inicia</strong></td>
+                <td><span class="badge-ok">✓ Sí (solo responde)</span></td>
+              </tr>
+              <tr>
+                <td><span class="badge-on">On</span></td>
+                <td>Fuerza el canal <strong>sin LACP</strong>. No negocia. Solo funciona si el otro lado también es On</td>
+                <td><span class="badge-no">✗ No</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:12px;font-size:0.85rem;color:var(--accent3);"><strong>⚠ Passive + Passive = NO forma canal</strong> — ninguno inicia la negociación.</p>
+        <p style="font-size:0.85rem;color:var(--accent3);margin-top:6px;"><strong>⚠ On + Active/Passive = NO forma canal</strong> — On no negocia con LACP.</p>
+      </div>
+
+      <div class="card">
+        <h3>Configuración LACP — Paso a paso</h3>
+        <p>Tres pasos para crear un EtherChannel LACP con trunk.</p>
+
+        <p style="margin: 14px 0 6px; font-size: 0.85rem; font-weight: 600; color: var(--accent);">Paso 1 — Seleccionar las interfaces con <code>interface range</code></p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Paso 1</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="cmd">S1(config)#</span> <span class="cmd">interface range</span> <span class="val">FastEthernet 0/1 - 2</span></pre>
+        </div>
+
+        <p style="margin: 14px 0 6px; font-size: 0.85rem; font-weight: 600; color: var(--accent);">Paso 2 — Crear el Port-Channel con <code>channel-group</code> y modo LACP</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Paso 2</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="cmd">S1(config-if-range)#</span> <span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">active</span>
+<span class="comment">Creating a port-channel interface Port-channel 1</span>
+<span class="cmd">S1(config-if-range)#</span> <span class="cmd">exit</span></pre>
+        </div>
+
+        <p style="margin: 14px 0 6px; font-size: 0.85rem; font-weight: 600; color: var(--accent);">Paso 3 — Configurar el Port-Channel como trunk</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Paso 3</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="cmd">S1(config)#</span> <span class="cmd">interface port-channel</span> <span class="val">1</span>
+<span class="cmd">S1(config-if)#</span> <span class="cmd">switchport mode trunk</span>
+<span class="cmd">S1(config-if)#</span> <span class="cmd">switchport trunk allowed vlan</span> <span class="val">1,2,20</span></pre>
+        </div>
+        <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text2);">La configuración de trunk y VLANs se aplica sobre el <strong>port-channel</strong>, no sobre las interfaces físicas individuales. Lo que se configura en el Port-Channel se aplica automáticamente a todos los puertos físicos del grupo.</p>
+
+        <p style="margin: 20px 0 6px; font-size: 0.85rem; font-weight: 600; color: var(--text2);">Versión completa en S1 (Active) y S2 (Passive):</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Ambos switches</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># S1 — modo Active (inicia negociación)</span>
+<span class="cmd">interface range</span> <span class="val">FastEthernet 0/1 - 2</span>
+<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">active</span>
+<span class="cmd">exit</span>
+<span class="cmd">interface port-channel</span> <span class="val">1</span>
+<span class="cmd">switchport mode trunk</span>
+<span class="cmd">switchport trunk allowed vlan</span> <span class="val">1,2,20</span>
+<span class="kw">!</span>
+<span class="comment"># S2 — modo Passive (responde, no inicia)</span>
+<span class="cmd">interface range</span> <span class="val">FastEthernet 0/1 - 2</span>
+<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">passive</span>
+<span class="cmd">exit</span>
+<span class="cmd">interface port-channel</span> <span class="val">1</span>
+<span class="cmd">switchport mode trunk</span>
+<span class="cmd">switchport trunk allowed vlan</span> <span class="val">1,2,20</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 5. STATIC ON ===== -->
+    <div class="section" id="static">
+      <div class="section-header">
+        <div class="section-icon">🟡</div>
+        <h2>Static EtherChannel (modo On)</h2>
+        <span class="badge">Sin negociación</span>
+      </div>
+
+      <div class="card">
+        <h3>Modo On — Sin protocolo de negociación</h3>
+        <p>Fuerza el EtherChannel sin PAgP ni LACP. <strong>Ambos lados deben estar en On.</strong> No hay mensajes de control — si hay un problema de configuración, no se detecta automáticamente.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Static On</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Ambos switches deben estar en On</span>
+<span class="cmd">int range</span> <span class="val">gig0/1 - 4</span>
+<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">on</span>
+<span class="cmd">exit</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 6. CONFIGURACIÓN COMPLETA ===== -->
+    <div class="section" id="config">
+      <div class="section-header">
+        <div class="section-icon">⚙️</div>
+        <h2>Configuración Completa</h2>
+        <span class="badge">Nivel Lab</span>
+      </div>
+
+      <div class="card">
+        <h3>EtherChannel con Trunk (caso más común en parcial)</h3>
+        <p>Se crea el EtherChannel y luego se configura el Port-Channel como trunk. La configuración de VLAN va en la interfaz <code>port-channel</code>, no en los puertos físicos.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — EtherChannel + Trunk (LACP)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="cmd">en</span>
+<span class="cmd">conf t</span>
+<span class="kw">!</span>
+<span class="comment"># Paso 1: Agrupar puertos físicos</span>
+<span class="cmd">int range</span> <span class="val">gig0/1 - 4</span>
+<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">active</span>
+<span class="cmd">exit</span>
+<span class="kw">!</span>
+<span class="comment"># Paso 2: Configurar el Port-Channel como trunk</span>
+<span class="cmd">int</span> <span class="val">port-channel 1</span>
+<span class="cmd">switchport mode trunk</span>
+<span class="cmd">switchport trunk native vlan</span> <span class="val">50</span>
+<span class="cmd">switchport trunk allowed vlan</span> <span class="val">10,20,30,40,50</span>
+<span class="cmd">no shutdown</span>
+<span class="cmd">exit</span>
+<span class="kw">!</span>
+<span class="comment"># Verificar</span>
+<span class="cmd">do show etherchannel summary</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>EtherChannel entre switch L3 y switch L2</h3>
+        <p>En el switch L3 el Port-Channel puede configurarse como <strong>routed port</strong> (con IP) en lugar de switchport, para enrutar entre VLANs.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Port-Channel como routed port</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># En el switch L3 (core)</span>
+<span class="cmd">int range</span> <span class="val">gig1/0/1 - 2</span>
+<span class="cmd">no switchport</span>
+<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">active</span>
+<span class="cmd">exit</span>
+<span class="kw">!</span>
+<span class="cmd">int</span> <span class="val">port-channel 1</span>
+<span class="cmd">no switchport</span>
+<span class="cmd">ip address</span> <span class="ip">10.1.1.1</span> <span class="ip">255.255.255.0</span>
+<span class="cmd">no shutdown</span>
+<span class="cmd">exit</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Configurar Load Balancing</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Load Balancing</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Configurar método de balanceo (modo global)</span>
+<span class="cmd">port-channel load-balance</span> <span class="proto">src-dst-ip</span>
+<span class="kw">!</span>
+<span class="comment"># Ver método actual</span>
+<span class="cmd">show etherchannel load-balance</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 7. VERIFICACIÓN ===== -->
+    <div class="section" id="verificacion">
+      <div class="section-header">
+        <div class="section-icon">🔍</div>
+        <h2>Verificación</h2>
+        <span class="badge">Show commands</span>
+      </div>
+
+      <div class="card key-data">
+        <h3>🎯 Los 4 comandos de verificación del libro</h3>
+        <p>Estos son los comandos que el libro destaca específicamente para verificar EtherChannel.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Comando</th><th>¿Qué muestra?</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>show interfaces port-channel</code></td>
+                <td>Estado, BW y estadísticas de la interfaz lógica Port-Channel</td>
+              </tr>
+              <tr>
+                <td><code>show etherchannel summary</code></td>
+                <td>Resumen de todos los grupos: protocolo, estado (SU/P/I/D) y puertos miembros</td>
+              </tr>
+              <tr>
+                <td><code>show etherchannel port-channel</code></td>
+                <td>Información del Port-Channel: modo, protocolo, puertos activos y standby</td>
+              </tr>
+              <tr>
+                <td><code>show interfaces etherchannel</code></td>
+                <td>Rol de cada interfaz física dentro del EtherChannel (por puerto individual)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code-block" style="margin-top:14px;">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Los 4 comandos — copiar y pegar</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="cmd">show interfaces port-channel</span> <span class="val">1</span>
+<span class="cmd">show etherchannel summary</span>
+<span class="cmd">show etherchannel port-channel</span>
+<span class="cmd">show interfaces</span> <span class="val">FastEthernet 0/1</span> <span class="cmd">etherchannel</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Comandos de verificación EtherChannel</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>show — EtherChannel</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Resumen de todos los EtherChannels (PRIMERO que revisar)</span>
+<span class="cmd">show etherchannel summary</span>
+<span class="kw">!</span>
+<span class="comment"># Detalle completo de un grupo específico</span>
+<span class="cmd">show etherchannel</span> <span class="val">1</span> <span class="cmd">detail</span>
+<span class="kw">!</span>
+<span class="comment"># Ver el Port-Channel como interfaz</span>
+<span class="cmd">show interfaces port-channel</span> <span class="val">1</span>
+<span class="kw">!</span>
+<span class="comment"># Ver puertos físicos miembros del canal</span>
+<span class="cmd">show interfaces port-channel</span> <span class="val">1</span> <span class="cmd">etherchannel</span>
+<span class="kw">!</span>
+<span class="comment"># Ver método de load balancing configurado</span>
+<span class="cmd">show etherchannel load-balance</span>
+<span class="kw">!</span>
+<span class="comment"># Ver estado de LACP en los puertos</span>
+<span class="cmd">show lacp</span> <span class="val">1</span> <span class="cmd">counters</span>
+<span class="cmd">show lacp</span> <span class="val">1</span> <span class="cmd">neighbor</span>
+<span class="kw">!</span>
+<span class="comment"># Ver estado de PAgP en los puertos</span>
+<span class="cmd">show pagp</span> <span class="val">1</span> <span class="cmd">counters</span>
+<span class="cmd">show pagp</span> <span class="val">1</span> <span class="cmd">neighbor</span>
+<span class="kw">!</span>
+<span class="comment"># Ver trunk en el Port-Channel</span>
+<span class="cmd">show interfaces trunk</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Interpretar show etherchannel summary</h3>
+        <p>Las letras de estado son las más importantes para el parcial:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Letra</th><th>Significado</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td><code>P</code></td><td>Puerto <strong>en canal</strong> (bundled)</td><td><span class="badge-ok">✓ Correcto</span></td></tr>
+              <tr><td><code>U</code></td><td>Port-Channel en <strong>uso</strong></td><td><span class="badge-ok">✓ Correcto</span></td></tr>
+              <tr><td><code>S</code></td><td>Capa 2 (Layer 2)</td><td><span class="badge-ok">✓ Normal</span></td></tr>
+              <tr><td><code>I</code></td><td>Puerto <strong>standalone</strong> (no agrupado)</td><td><span class="badge-no">✗ Error</span></td></tr>
+              <tr><td><code>D</code></td><td>Puerto <strong>down</strong></td><td><span class="badge-no">✗ Error</span></td></tr>
+              <tr><td><code>H</code></td><td>En espera (Hot-standby — LACP)</td><td>⚠️ Standby</td></tr>
+              <tr><td><code>s</code></td><td>Suspended</td><td><span class="badge-no">✗ Error</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Ejemplo de salida show etherchannel summary</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Salida esperada cuando todo está bien:</span>
+Group  Port-channel  Protocol    Ports
+------+-------------+-----------+-----------------------------------------------
+<span class="val">1</span>      <span class="cmd">Po1(SU)</span>       <span class="proto">LACP</span>        <span class="ip">Gi0/1(P)  Gi0/2(P)  Gi0/3(P)  Gi0/4(P)</span>
+
+<span class="comment"># SU = en uso, Layer 2
+# P  = puerto en canal (bundled) ← buscar esto</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 8. TROUBLESHOOTING ===== -->
+    <div class="section" id="troubleshoot">
+      <div class="section-header">
+        <div class="section-icon">🛠️</div>
+        <h2>Troubleshooting</h2>
+        <span class="badge">Problemas comunes</span>
+      </div>
+
+      <div class="card">
+        <h3>Errores más comunes</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Problema</th><th>Causa</th><th>Solución</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Puerto en <code>I</code> (standalone)</td>
+                <td>Modos incompatibles (Auto+Auto, Passive+Passive)</td>
+                <td>Cambiar un lado a Desirable / Active</td>
+              </tr>
+              <tr>
+                <td>Canal no sube</td>
+                <td>Velocidad o dúplex diferente entre puertos</td>
+                <td>Igualar velocidad y dúplex en todos los puertos</td>
+              </tr>
+              <tr>
+                <td>Canal sube pero pierde tráfico</td>
+                <td>VLANs permitidas diferentes en los puertos</td>
+                <td>Igualar VLANs permitidas en Port-Channel</td>
+              </tr>
+              <tr>
+                <td>On + Desirable/Active</td>
+                <td>On no negocia, el otro sí</td>
+                <td>Poner ambos en On, o ambos en protocolo</td>
+              </tr>
+              <tr>
+                <td>PAgP con switch no-Cisco</td>
+                <td>PAgP es propietario Cisco</td>
+                <td>Usar LACP (estándar IEEE)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Eliminar un EtherChannel</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
+            <span>Cisco IOS — Eliminar EtherChannel</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="comment"># Quitar puertos físicos del canal</span>
+<span class="cmd">int range</span> <span class="val">gig0/1 - 4</span>
+<span class="cmd">no channel-group 1</span>
+<span class="cmd">exit</span>
+<span class="kw">!</span>
+<span class="comment"># Borrar la interfaz Port-Channel</span>
+<span class="cmd">no interface port-channel</span> <span class="val">1</span></pre>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+    document.getElementById('theme-label').textContent = isDark ? 'Modo Oscuro' : 'Modo Claro';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  }
+  (function() {
+    const saved = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    if (saved === 'light') {
+      document.getElementById('theme-icon').textContent = '🌙';
+      document.getElementById('theme-label').textContent = 'Modo Oscuro';
+    }
+  })();
+
+  const progressBar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  });
+
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+  }
+  function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+  }
+  document.querySelectorAll('.sidebar nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) closeSidebar();
+    });
+  });
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copiar';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+  const sections = document.querySelectorAll('.section[id]');
+  const navLinks = document.querySelectorAll('.sidebar nav a[href^="#"]');
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`.sidebar nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => sectionObserver.observe(s));
+</script>
+</body>
+</html>
