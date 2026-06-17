@@ -288,6 +288,7 @@
       color: var(--text2);
       line-height: 1.8;
       overflow-x: auto;
+      white-space: pre;
     }
     .diagram .d-accent { color: var(--accent); }
     .diagram .d-green { color: var(--accent2); }
@@ -374,10 +375,8 @@
     <a href="#pagp">🔵 PAgP (Cisco)</a>
     <a href="#lacp">🟣 LACP (IEEE)</a>
     <a href="#static">🟡 Static (On)</a>
-    <div class="section-label">Configuración</div>
-    <a href="#config">⚙️ Configuración</a>
+    <div class="section-label">Verificación</div>
     <a href="#verificacion">🔍 Verificación</a>
-    <a href="#troubleshoot">🛠️ Troubleshooting</a>
   </nav>
 </aside>
 
@@ -623,25 +622,6 @@
       </div>
 
       <div class="card key-data">
-        <h3>🎯 Métodos de Load Balancing</h3>
-        <p>EtherChannel distribuye el tráfico entre los links. El método determina qué campos del frame/paquete se usan para elegir el enlace.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Método</th><th>Basado en</th></tr></thead>
-            <tbody>
-              <tr><td><code>src-mac</code></td><td>MAC origen</td></tr>
-              <tr><td><code>dst-mac</code></td><td>MAC destino</td></tr>
-              <tr><td><code>src-dst-mac</code></td><td>MAC origen + destino (más balanceado)</td></tr>
-              <tr><td><code>src-ip</code></td><td>IP origen</td></tr>
-              <tr><td><code>dst-ip</code></td><td>IP destino</td></tr>
-              <tr><td><code>src-dst-ip</code></td><td>IP origen + destino (más balanceado)</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p style="margin-top:10px;font-size:0.8rem;">El método por defecto varía según plataforma. <strong>src-dst-mac</strong> o <strong>src-dst-ip</strong> dan el mejor balance.</p>
-      </div>
-
-      <div class="card key-data">
         <h3>🎯 Restricciones de implementación (6.1.4)</h3>
         <div class="info-grid">
           <div class="info-item">
@@ -742,35 +722,6 @@
       </div>
 
       <div class="card">
-        <h3>Modos PAgP — Cómo funciona cada uno</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Modo</th><th>Comportamiento</th><th>Intercambia paquetes PAgP</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><span class="badge-pagp">Desirable</span></td>
-                <td>Negociación <strong>activa</strong>: inicia la negociación enviando paquetes PAgP al otro lado</td>
-                <td><span class="badge-ok">✓ Sí</span></td>
-              </tr>
-              <tr>
-                <td><span class="badge-pagp">Auto</span></td>
-                <td>Negociación <strong>pasiva</strong>: responde paquetes PAgP recibidos, pero <strong>no inicia</strong></td>
-                <td><span class="badge-ok">✓ Sí (solo responde)</span></td>
-              </tr>
-              <tr>
-                <td><span class="badge-on">On</span></td>
-                <td>Fuerza el canal <strong>sin PAgP</strong>. No negocia. Solo funciona si el otro lado también es On</td>
-                <td><span class="badge-no">✗ No</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p style="margin-top:12px;font-size:0.85rem;color:var(--accent3);"><strong>⚠ Auto + Auto = NO forma canal</strong> — ninguno inicia la negociación.</p>
-        <p style="font-size:0.85rem;color:var(--accent3);margin-top:6px;"><strong>⚠ On + Desirable/Auto = NO forma canal</strong> — On no negocia con PAgP.</p>
-        <p style="font-size:0.85rem;color:var(--text2);margin-top:6px;">Modificar un puerto físico del canal modifica automáticamente <strong>todos los demás puertos del mismo canal</strong>.</p>
-      </div>
-
-      <div class="card">
         <h3>Configuración PAgP — Desirable / Auto</h3>
         <p>Se configuran los puertos físicos y se asignan al Port-Channel con <code>channel-group</code>.</p>
         <div class="code-block">
@@ -831,34 +782,6 @@
           </div>
         </div>
         <p style="margin-top:12px;font-size:0.85rem;color:var(--text2);">Si falla un enlace activo, un enlace de reserva (standby) <strong>se activa automáticamente</strong>. Esto lo diferencia de PAgP, que no tiene standby.</p>
-      </div>
-
-      <div class="card">
-        <h3>Modos LACP — Cómo funciona cada uno</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Modo</th><th>Comportamiento</th><th>Intercambia paquetes LACP</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><span class="badge-lacp">Active</span></td>
-                <td>Negociación <strong>activa</strong>: inicia la negociación enviando paquetes LACP al otro lado</td>
-                <td><span class="badge-ok">✓ Sí</span></td>
-              </tr>
-              <tr>
-                <td><span class="badge-lacp">Passive</span></td>
-                <td>Negociación <strong>pasiva</strong>: responde paquetes LACP recibidos, pero <strong>no inicia</strong></td>
-                <td><span class="badge-ok">✓ Sí (solo responde)</span></td>
-              </tr>
-              <tr>
-                <td><span class="badge-on">On</span></td>
-                <td>Fuerza el canal <strong>sin LACP</strong>. No negocia. Solo funciona si el otro lado también es On</td>
-                <td><span class="badge-no">✗ No</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p style="margin-top:12px;font-size:0.85rem;color:var(--accent3);"><strong>⚠ Passive + Passive = NO forma canal</strong> — ninguno inicia la negociación.</p>
-        <p style="font-size:0.85rem;color:var(--accent3);margin-top:6px;"><strong>⚠ On + Active/Passive = NO forma canal</strong> — On no negocia con LACP.</p>
       </div>
 
       <div class="card">
@@ -951,85 +874,7 @@
       </div>
     </div>
 
-    <!-- ===== 6. CONFIGURACIÓN COMPLETA ===== -->
-    <div class="section" id="config">
-      <div class="section-header">
-        <div class="section-icon">⚙️</div>
-        <h2>Configuración Completa</h2>
-        <span class="badge">Nivel Lab</span>
-      </div>
-
-      <div class="card">
-        <h3>EtherChannel con Trunk (caso más común en parcial)</h3>
-        <p>Se crea el EtherChannel y luego se configura el Port-Channel como trunk. La configuración de VLAN va en la interfaz <code>port-channel</code>, no en los puertos físicos.</p>
-        <div class="code-block">
-          <div class="code-header">
-            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
-            <span>Cisco IOS — EtherChannel + Trunk (LACP)</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-          </div>
-          <pre><span class="cmd">en</span>
-<span class="cmd">conf t</span>
-<span class="kw">!</span>
-<span class="comment"># Paso 1: Agrupar puertos físicos</span>
-<span class="cmd">int range</span> <span class="val">gig0/1 - 4</span>
-<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">active</span>
-<span class="cmd">exit</span>
-<span class="kw">!</span>
-<span class="comment"># Paso 2: Configurar el Port-Channel como trunk</span>
-<span class="cmd">int</span> <span class="val">port-channel 1</span>
-<span class="cmd">switchport mode trunk</span>
-<span class="cmd">switchport trunk native vlan</span> <span class="val">50</span>
-<span class="cmd">switchport trunk allowed vlan</span> <span class="val">10,20,30,40,50</span>
-<span class="cmd">no shutdown</span>
-<span class="cmd">exit</span>
-<span class="kw">!</span>
-<span class="comment"># Verificar</span>
-<span class="cmd">do show etherchannel summary</span></pre>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>EtherChannel entre switch L3 y switch L2</h3>
-        <p>En el switch L3 el Port-Channel puede configurarse como <strong>routed port</strong> (con IP) en lugar de switchport, para enrutar entre VLANs.</p>
-        <div class="code-block">
-          <div class="code-header">
-            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
-            <span>Cisco IOS — Port-Channel como routed port</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-          </div>
-          <pre><span class="comment"># En el switch L3 (core)</span>
-<span class="cmd">int range</span> <span class="val">gig1/0/1 - 2</span>
-<span class="cmd">no switchport</span>
-<span class="cmd">channel-group</span> <span class="val">1</span> <span class="cmd">mode</span> <span class="proto">active</span>
-<span class="cmd">exit</span>
-<span class="kw">!</span>
-<span class="cmd">int</span> <span class="val">port-channel 1</span>
-<span class="cmd">no switchport</span>
-<span class="cmd">ip address</span> <span class="ip">10.1.1.1</span> <span class="ip">255.255.255.0</span>
-<span class="cmd">no shutdown</span>
-<span class="cmd">exit</span></pre>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Configurar Load Balancing</h3>
-        <div class="code-block">
-          <div class="code-header">
-            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
-            <span>Cisco IOS — Load Balancing</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-          </div>
-          <pre><span class="comment"># Configurar método de balanceo (modo global)</span>
-<span class="cmd">port-channel load-balance</span> <span class="proto">src-dst-ip</span>
-<span class="kw">!</span>
-<span class="comment"># Ver método actual</span>
-<span class="cmd">show etherchannel load-balance</span></pre>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== 7. VERIFICACIÓN ===== -->
+    <!-- ===== 6. VERIFICACIÓN ===== -->
     <div class="section" id="verificacion">
       <div class="section-header">
         <div class="section-icon">🔍</div>
@@ -1077,42 +922,6 @@
       </div>
 
       <div class="card">
-        <h3>Comandos de verificación EtherChannel</h3>
-        <div class="code-block">
-          <div class="code-header">
-            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
-            <span>show — EtherChannel</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-          </div>
-          <pre><span class="comment"># Resumen de todos los EtherChannels (PRIMERO que revisar)</span>
-<span class="cmd">show etherchannel summary</span>
-<span class="kw">!</span>
-<span class="comment"># Detalle completo de un grupo específico</span>
-<span class="cmd">show etherchannel</span> <span class="val">1</span> <span class="cmd">detail</span>
-<span class="kw">!</span>
-<span class="comment"># Ver el Port-Channel como interfaz</span>
-<span class="cmd">show interfaces port-channel</span> <span class="val">1</span>
-<span class="kw">!</span>
-<span class="comment"># Ver puertos físicos miembros del canal</span>
-<span class="cmd">show interfaces port-channel</span> <span class="val">1</span> <span class="cmd">etherchannel</span>
-<span class="kw">!</span>
-<span class="comment"># Ver método de load balancing configurado</span>
-<span class="cmd">show etherchannel load-balance</span>
-<span class="kw">!</span>
-<span class="comment"># Ver estado de LACP en los puertos</span>
-<span class="cmd">show lacp</span> <span class="val">1</span> <span class="cmd">counters</span>
-<span class="cmd">show lacp</span> <span class="val">1</span> <span class="cmd">neighbor</span>
-<span class="kw">!</span>
-<span class="comment"># Ver estado de PAgP en los puertos</span>
-<span class="cmd">show pagp</span> <span class="val">1</span> <span class="cmd">counters</span>
-<span class="cmd">show pagp</span> <span class="val">1</span> <span class="cmd">neighbor</span>
-<span class="kw">!</span>
-<span class="comment"># Ver trunk en el Port-Channel</span>
-<span class="cmd">show interfaces trunk</span></pre>
-        </div>
-      </div>
-
-      <div class="card">
         <h3>Interpretar show etherchannel summary</h3>
         <p>Las letras de estado son las más importantes para el parcial:</p>
         <div class="table-wrap">
@@ -1146,69 +955,6 @@ Group  Port-channel  Protocol    Ports
       </div>
     </div>
 
-    <!-- ===== 8. TROUBLESHOOTING ===== -->
-    <div class="section" id="troubleshoot">
-      <div class="section-header">
-        <div class="section-icon">🛠️</div>
-        <h2>Troubleshooting</h2>
-        <span class="badge">Problemas comunes</span>
-      </div>
-
-      <div class="card">
-        <h3>Errores más comunes</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Problema</th><th>Causa</th><th>Solución</th></tr></thead>
-            <tbody>
-              <tr>
-                <td>Puerto en <code>I</code> (standalone)</td>
-                <td>Modos incompatibles (Auto+Auto, Passive+Passive)</td>
-                <td>Cambiar un lado a Desirable / Active</td>
-              </tr>
-              <tr>
-                <td>Canal no sube</td>
-                <td>Velocidad o dúplex diferente entre puertos</td>
-                <td>Igualar velocidad y dúplex en todos los puertos</td>
-              </tr>
-              <tr>
-                <td>Canal sube pero pierde tráfico</td>
-                <td>VLANs permitidas diferentes en los puertos</td>
-                <td>Igualar VLANs permitidas en Port-Channel</td>
-              </tr>
-              <tr>
-                <td>On + Desirable/Active</td>
-                <td>On no negocia, el otro sí</td>
-                <td>Poner ambos en On, o ambos en protocolo</td>
-              </tr>
-              <tr>
-                <td>PAgP con switch no-Cisco</td>
-                <td>PAgP es propietario Cisco</td>
-                <td>Usar LACP (estándar IEEE)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Eliminar un EtherChannel</h3>
-        <div class="code-block">
-          <div class="code-header">
-            <div class="dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div>
-            <span>Cisco IOS — Eliminar EtherChannel</span>
-            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-          </div>
-          <pre><span class="comment"># Quitar puertos físicos del canal</span>
-<span class="cmd">int range</span> <span class="val">gig0/1 - 4</span>
-<span class="cmd">no channel-group 1</span>
-<span class="cmd">exit</span>
-<span class="kw">!</span>
-<span class="comment"># Borrar la interfaz Port-Channel</span>
-<span class="cmd">no interface port-channel</span> <span class="val">1</span></pre>
-        </div>
-      </div>
-
-    </div>
 
   </div><!-- /content -->
 </div><!-- /main -->
